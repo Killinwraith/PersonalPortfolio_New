@@ -1,0 +1,96 @@
+{
+  "$ref": "#/definitions/stickers",
+  "definitions": {
+    "stickers": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "src": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string",
+            "enum": [
+              "paper",
+              "ink",
+              "cream",
+              "red",
+              "yellow",
+              "pink",
+              "blue",
+              "green",
+              "orange",
+              "teal",
+              "purple"
+            ],
+            "default": "paper"
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "rect",
+              "circle",
+              "tape",
+              "peel"
+            ],
+            "default": "rect"
+          },
+          "font": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "mono",
+              "serif"
+            ],
+            "default": "sans"
+          },
+          "size": {
+            "type": "string",
+            "enum": [
+              "sm",
+              "md",
+              "lg",
+              "xl"
+            ],
+            "default": "md"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "rotation": {
+            "type": "number",
+            "default": 0
+          },
+          "z": {
+            "type": "number",
+            "default": 5
+          },
+          "href": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

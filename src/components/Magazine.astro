@@ -1,0 +1,170 @@
+---
+/**
+ * <Magazine />
+ * The calm body of the site, sitting under the chaotic sticker wall.
+ * Renders the most recent feature as a big editorial hero, then the
+ * rest as a department-style grid.
+ *
+ * Add new features by creating MDX files in src/content/features/.
+ * They appear here automatically, sorted by publishedAt desc.
+ */
+
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('features', ({ data }) => !data.draft);
+const sorted = all.sort((a, b) =>
+  +new Date(b.data.publishedAt) - +new Date(a.data.publishedAt)
+);
+
+const featured = sorted[0];
+const departments = sorted.slice(1, 5);
+---
+
+<section class="mag">
+  <header class="masthead">
+    <div class="title">HETANG</div>
+    <div class="issue">ISSUE 01 — SPRING 2026 · CALGARY, AB</div>
+  </header>
+
+  <hr class="rule" />
+
+  {featured && (
+    <a class="feature" href={`/features/${featured.id}`}>
+      {featured.data.image && (
+        <div class="feature-img">
+          <img src={featured.data.image} alt="" />
+        </div>
+      )}
+      <div class="feature-meta">
+        <div class="kicker">{featured.data.kicker}</div>
+        <h2 class="headline">{featured.data.title}</h2>
+        <p class="deck">{featured.data.deck}</p>
+        <div class="read">Read the piece →</div>
+      </div>
+    </a>
+  )}
+
+  {departments.length > 0 && (
+    <>
+      <hr class="rule" />
+      <div class="depts">
+        {departments.map((d) => (
+          <a class="dept" href={`/features/${d.id}`}>
+            <div class="kicker">{d.data.kicker}</div>
+            <h3 class="dept-head">{d.data.title}</h3>
+            <p class="dept-deck">{d.data.deck}</p>
+          </a>
+        ))}
+      </div>
+    </>
+  )}
+
+  <hr class="rule" />
+
+  <footer class="colophon">
+    <div>
+      <div class="kicker">COLOPHON</div>
+      <p>Hand-written and hand-coded in Calgary. Set in Fraunces, Bricolage Grotesque, and JetBrains Mono. Built with Astro.</p>
+    </div>
+    <div>
+      <div class="kicker">ELSEWHERE</div>
+      <p>
+        <a href="https://github.com/" target="_blank" rel="noopener">github</a> ·
+        <a href="https://linkedin.com/" target="_blank" rel="noopener">linkedin</a> ·
+        <a href="mailto:hello@hetangmehta.ca">email</a>
+      </p>
+    </div>
+  </footer>
+</section>
+
+<style>
+  .mag {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 4rem) var(--pad-page);
+    color: var(--fg-page);
+  }
+  .masthead {
+    text-align: center;
+    padding: 1rem 0 1.5rem;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    line-height: 1;
+    font-variation-settings: 'opsz' 144, 'SOFT' 0;
+  }
+  .issue {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    margin-top: 0.75rem;
+    color: var(--fg-muted);
+  }
+
+  /* big feature ----------------------------------------------------- */
+  .feature {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: end;
+    padding: 2rem 0;
+    color: inherit;
+  }
+  @media (max-width: 720px) {
+    .feature { grid-template-columns: 1fr; align-items: start; }
+  }
+  .feature-img {
+    aspect-ratio: 4 / 5;
+    background: var(--c-cream);
+    overflow: hidden;
+  }
+  .feature-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .feature .read {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    transition: transform 220ms ease;
+  }
+  .feature:hover .read { transform: translateX(4px); }
+  .feature:hover .headline { text-decoration: underline; text-underline-offset: 6px; }
+
+  /* department grid ------------------------------------------------- */
+  .depts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    padding: 1.5rem 0;
+  }
+  .dept { color: inherit; padding: 0.25rem 0; }
+  .dept-head {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    line-height: 1.3;
+    font-weight: 400;
+    margin: 0.4rem 0 0.4rem;
+  }
+  .dept-deck {
+    font-size: 0.92rem;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .dept:hover .dept-head { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* colophon -------------------------------------------------------- */
+  .colophon {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 1rem 0 0;
+  }
+  .colophon p { margin: 0.4rem 0; font-size: 0.92rem; color: var(--fg-muted); line-height: 1.5; }
+  .colophon a:hover { text-decoration: underline; text-underline-offset: 3px; }
+</style>

@@ -1,0 +1,25 @@
+---
+title: "A prosthetic knee that listens to muscle signals"
+deck: "ML work with Alberta BIONIX: classifying surface-EMG patterns to make a prosthetic limb respond to intent in real time."
+kicker: "FEATURE — BUILDING"
+publishedAt: 2026-04-22
+tags: ["work", "ml", "bionix"]
+---
+
+The problem with a prosthetic knee is that it doesn't know what you're about to do. A standard control loop reacts to forces *after* you start moving — by then the knee is already a half-step behind. The thing we've been working on at Alberta BIONIX takes a different bet: read the electrical signals from the residual leg muscles, and use them to predict the next motion *before* the limb has to commit.
+
+## the input
+
+Eight surface-EMG channels wrapped around the thigh, sampled at 1 kHz. Each window of activity gets turned into a feature vector — RMS, waveform length, slope-sign changes, and a handful of frequency-domain stats. Cheap features, but they hold up.
+
+## the model
+
+A small 1D-CNN, eight inputs wide and roughly a hundred thousand parameters. Trained on labeled data from a stationary rig: sitting, standing, walking, stairs, stumble-recovery. Validation accuracy is in the high 90s on within-subject splits and considerably worse across subjects — which is the real problem and the one we're spending most of our time on now.
+
+## what I learned
+
+Cross-subject generalization in EMG is a different sport from getting good numbers in a paper. Skin impedance, electrode placement, hair, sweat — all of it is real, all of it kills your model in the field. The trick we landed on is a small adaptation step at fit-time: ten seconds of recorded baseline motion, fine-tune the last layer, re-normalize. It doesn't solve the problem, but it gets us from "works in the lab" to "works on the second person who tries it."
+
+## what's next
+
+We're moving from offline classification to streaming. Latency budget: 80 ms from muscle activation to actuator command. Currently sitting around 110 ms, mostly in the Python inference layer. Rewriting the inference path in C++ is the next month of my life.

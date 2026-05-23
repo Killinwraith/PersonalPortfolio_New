@@ -1,0 +1,190 @@
+---
+/**
+ * <StickerWall />
+ * The collage hero. Pulls stickers from the content collection and renders
+ * them with an underlayer (paint patches, marker scribbles, faded tags)
+ * and the main "Hetang" signature.
+ *
+ * To replace the italic-serif signature with your actual handwriting:
+ *   1. Scan your name written on white paper, transparent PNG.
+ *   2. Save it to public/handwriting/hetang.png
+ *   3. Uncomment the <img> block below and remove the <span> block.
+ */
+
+import { getCollection } from 'astro:content';
+import Sticker from './Sticker.astro';
+
+const stickers = await getCollection('stickers');
+---
+
+<section class="wall" aria-label="A sticker wall — about Hetang, in fragments">
+
+  <!-- back layer: paint patches that show through the stickers -->
+  <div class="paint p1" aria-hidden="true"></div>
+  <div class="paint p2" aria-hidden="true"></div>
+  <div class="paint p3" aria-hidden="true"></div>
+  <div class="paint p4" aria-hidden="true"></div>
+
+  <!-- back layer: marker scribbles and faded tags drawn underneath -->
+  <svg class="under" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path d="M 40 200 L 50 295 M 35 240 L 78 243 M 58 198 L 68 293"
+          stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" />
+    <path d="M 270 50 Q 295 30, 320 50 T 370 50 Q 395 70, 420 50"
+          stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6" />
+    <text x="520" y="380" font-family="Fraunces, serif" font-style="italic"
+          font-size="80" fill="currentColor" transform="rotate(-14 520 380)">H.M.</text>
+    <path d="M 130 600 Q 160 580, 190 600 T 250 598"
+          stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="350" y="170" font-family="sans-serif" font-size="40" fill="currentColor"
+          font-weight="700" transform="rotate(8 350 170)" opacity="0.55">×××</text>
+    <path d="M 580 100 L 660 140 M 600 90 L 645 158 M 590 120 L 655 110"
+          stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="80" y="520" font-family="Fraunces, serif" font-style="italic"
+          font-size="44" fill="currentColor" transform="rotate(-8 80 520)" opacity="0.75">hetang</text>
+    <text x="430" y="650" font-family="sans-serif" font-size="22" fill="currentColor"
+          font-weight="700" transform="rotate(-5 430 650)" opacity="0.7">SK8</text>
+  </svg>
+
+  <!-- mid layer: the giant signature, partially obscured by front stickers -->
+  <div class="signature" aria-label="Hetang">
+    <!-- swap this <span> for an <img src="/handwriting/hetang.png" alt="Hetang"> -->
+    <span>Hetang</span>
+  </div>
+
+  <!-- front layer: every sticker, driven by the data collection -->
+  {stickers.map((s, i) => (
+    <Sticker id={s.id} {...s.data} index={i} />
+  ))}
+
+  <!-- tiny secondary signature scrawled in a corner -->
+  <div class="signature sm" aria-hidden="true"><span>h.m.</span></div>
+
+  <!-- scroll hint -->
+  <div class="hint" aria-hidden="true">scroll ↓</div>
+</section>
+
+<style>
+  .wall {
+    position: relative;
+    width: 100%;
+    height: min(92vh, 820px);
+    background: var(--wall);
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--ink); /* drives scribble currentColor */
+  }
+  @media (prefers-color-scheme: dark) {
+    .wall { color: var(--paper); }
+  }
+
+  /* paint patches ---------------------------------------------------- */
+  .paint {
+    position: absolute;
+    z-index: 1;
+    border-radius: 8px;
+    opacity: 0.32;
+    pointer-events: none;
+  }
+  .p1 { left: 12%; top: 5%;  width: 90px;  height: 60px; background: #8B4848; transform: rotate(-4deg); }
+  .p2 { left: 60%; top: 20%; width: 110px; height: 40px; background: #3D5F8A; transform: rotate(8deg); opacity: 0.28; }
+  .p3 { left: 30%; top: 55%; width: 150px; height: 80px; background: #7A6B3A; transform: rotate(-6deg); opacity: 0.28; }
+  .p4 { left: 75%; top: 75%; width: 100px; height: 50px; background: #4A6B48; transform: rotate(3deg); opacity: 0.3; }
+
+  /* underlayer marker scribbles + faded tags ------------------------- */
+  .under {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* signature -------------------------------------------------------- */
+  .signature {
+    position: absolute;
+    left: 3%;
+    top: 28%;
+    z-index: 4;
+    pointer-events: none;
+    transform: rotate(-5deg);
+    color: var(--ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    .signature { color: var(--paper); }
+  }
+  .signature span {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(72px, 14vw, 152px);
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  }
+  .signature img {
+    width: clamp(280px, 50vw, 580px);
+    height: auto;
+    /* keep dark in light mode, light in dark mode automatically */
+    filter: brightness(0);
+  }
+  @media (prefers-color-scheme: dark) {
+    .signature img { filter: brightness(0) invert(0.95); }
+  }
+  .signature.sm {
+    left: auto;
+    right: 12%;
+    top: 80%;
+    z-index: 7;
+    transform: rotate(7deg);
+  }
+  .signature.sm span { font-size: clamp(28px, 4vw, 40px); }
+
+  /* scroll hint ------------------------------------------------------ */
+  .hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 4px 10px;
+    border-radius: 999px;
+    opacity: 0.85;
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translate(-50%, 0); }
+    50%      { transform: translate(-50%, 4px); }
+  }
+</style>
+
+<script>
+  // very subtle parallax: front-layer stickers (z >= 6) drift slightly more than back
+  const wall = document.querySelector<HTMLElement>('.wall');
+  if (wall && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const front = wall.querySelectorAll<HTMLElement>('.stk');
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const offset = window.scrollY;
+        if (offset < window.innerHeight) {
+          front.forEach((el) => {
+            const z = Number(getComputedStyle(el).zIndex) || 5;
+            const factor = z >= 6 ? 0.08 : 0.03;
+            el.style.setProperty('translate', `0 ${-offset * factor}px`);
+          });
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

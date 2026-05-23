@@ -1,0 +1,130 @@
+/* =========================================================
+   hetangmehta.ca — design tokens
+   typography: Fraunces (display) + Bricolage Grotesque (sans) + JetBrains Mono
+   loaded via Google Fonts <link> in BaseLayout
+   ========================================================= */
+
+:root {
+  /* core surfaces */
+  --wall:      #A39E94;   /* the sticker-wall background — warm metallic gray */
+  --paper:     #FAF3E0;   /* white-sticker / cream */
+  --ink:       #181612;   /* dark sticker / text */
+  --bg-page:   #F4EFE5;   /* magazine page background */
+  --fg-page:   #1A1614;   /* magazine body text */
+  --fg-muted:  #5A554D;   /* secondary text */
+  --rule:      #1A1614;   /* dividers */
+
+  /* sticker accent palette */
+  --c-red:     #C8302E;
+  --c-yellow:  #E8B73C;
+  --c-pink:    #E78AB0;
+  --c-blue:    #3D72B0;
+  --c-green:   #5A9A45;
+  --c-orange:  #DB7833;
+  --c-teal:    #2F9582;
+  --c-purple:  #6A5AAB;
+  --c-cream:   #DDD0AC;
+
+  /* type stack */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans:    'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* layout */
+  --maxw: 1080px;
+  --pad-page: clamp(1rem, 4vw, 2.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wall:     #3F3A33;
+    --bg-page:  #15110D;
+    --fg-page:  #F0E8D0;
+    --fg-muted: #9A9088;
+    --rule:     #F0E8D0;
+  }
+}
+
+/* reset & base ------------------------------------------------------------ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg-page);
+  background: var(--bg-page);
+  font-feature-settings: 'ss01' on, 'kern' on;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--ink); color: var(--paper); }
+
+/* magazine typography ---------------------------------------------------- */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  font-size: clamp(1.75rem, 4.5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0.4em 0 0.5em;
+  color: var(--fg-page);
+}
+
+.deck {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  line-height: 1.45;
+  color: var(--fg-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.rule {
+  border: 0;
+  border-top: 0.5px solid var(--rule);
+  margin: 1.5rem 0;
+  opacity: 0.6;
+}
+
+/* accessibility ---------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

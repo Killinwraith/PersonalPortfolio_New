@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About — Hetang Mehta" description="A little context.">
+  <main class="about">
+    <a href="/" class="back">← back to the wall</a>
+
+    <div class="kicker">ABOUT</div>
+    <h1 class="headline">Hi, I'm Hetang.</h1>
+    <p class="deck">
+      Computer engineering student at the University of Alberta. ML for prosthetics with Alberta BIONIX, internal tooling at CNRL, side quests in fashion and travel that turn into entries on the wall.
+    </p>
+
+    <hr class="rule" />
+
+    <section class="prose">
+      <p>
+        I'm in Calgary by default, in Edmonton during the school year, and trying to be somewhere else as often as I can swing it. Most of what I'm interested in I have to learn by making: software, dishes, outfits, plans. The site you're on is the latest version of that habit — a place where the code I ship, the trips I take, and the things I'm wearing all live next to each other instead of being filed into separate folders.
+      </p>
+
+      <p>
+        If you've come here from a résumé, the work I'm proudest of right now is the EMG classifier for adaptive prosthetic knee control, and the budgeting PWA that ended up in front of a few hundred engineers at CNRL. If you've come here from somewhere else, the trips and the fits are probably the easier entry point. Both are real.
+      </p>
+
+      <p>
+        For now: hello@hetangmehta.ca. I read everything.
+      </p>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .about {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5rem) var(--pad-page);
+    color: var(--fg-page);
+  }
+  .back {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+    opacity: 0.75;
+  }
+  .back:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+  .prose p {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.65;
+    margin: 0 0 1.25em;
+  }
+</style>

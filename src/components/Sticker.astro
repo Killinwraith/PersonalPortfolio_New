@@ -1,0 +1,136 @@
+---
+/**
+ * <Sticker />
+ * Renders a single sticker on the wall. Driven entirely by data from
+ * src/content/stickers.json so the wall is composable: append a row,
+ * a new sticker appears.
+ *
+ * Swap to a real photographed sticker by passing `src` + `alt` instead
+ * of `text`. The component picks the right rendering automatically.
+ */
+
+interface Props {
+  id: string;
+  text?: string;
+  src?: string;
+  alt?: string;
+  variant?: 'paper'|'ink'|'cream'|'red'|'yellow'|'pink'|'blue'|'green'|'orange'|'teal'|'purple';
+  shape?: 'rect'|'circle'|'tape'|'peel';
+  font?: 'sans'|'mono'|'serif';
+  size?: 'sm'|'md'|'lg'|'xl';
+  x: number;
+  y: number;
+  rotation?: number;
+  z?: number;
+  href?: string;
+  index?: number;
+}
+
+const {
+  text, src, alt,
+  variant = 'paper',
+  shape   = 'rect',
+  font    = 'sans',
+  size    = 'md',
+  x, y,
+  rotation = 0,
+  z = 5,
+  href,
+  index = 0,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'div';
+const classes = ['stk', `v-${variant}`, `s-${shape}`, `f-${font}`, `sz-${size}`].join(' ');
+const style = `--x:${x}%;--y:${y}%;--r:${rotation}deg;--z:${z};--i:${index}`;
+const ariaLabel = href && text ? `${text} (link to feature)` : undefined;
+---
+
+<Tag class={classes} style={style} href={href} aria-label={ariaLabel}>
+  {src ? <img src={src} alt={alt ?? ''} /> : (text && <span set:html={text.replace(/\n/g, '<br>')} />)}
+</Tag>
+
+<style>
+  .stk {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    transform: rotate(var(--r));
+    transform-origin: center;
+    z-index: var(--z);
+    padding: 4px 10px;
+    font-weight: 500;
+    line-height: 1.15;
+    white-space: nowrap;
+    border-radius: 2px;
+    display: inline-block;
+    text-decoration: none;
+    cursor: default;
+    user-select: none;
+    /* staggered fade-in on load — feels like the stickers got applied */
+    opacity: 0;
+    animation: stick 480ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 14ms);
+    transition: transform 220ms ease, filter 220ms ease;
+  }
+  .stk[href] { cursor: pointer; }
+  .stk[href]:hover,
+  .stk[href]:focus-visible {
+    transform: rotate(calc(var(--r) - 2deg)) scale(1.06);
+    filter: brightness(1.05);
+    z-index: 30;
+    outline: none;
+  }
+  .stk img {
+    display: block;
+    max-width: 140px;
+    height: auto;
+    border-radius: inherit;
+  }
+
+  @keyframes stick {
+    from { opacity: 0; transform: rotate(var(--r)) scale(0.85) translateY(-6px); }
+    to   { opacity: 1; transform: rotate(var(--r)) scale(1) translateY(0); }
+  }
+
+  /* fonts ------------------------------------------------------------- */
+  .f-sans  { font-family: var(--font-sans);    font-size: 13px; }
+  .f-mono  { font-family: var(--font-mono);    font-size: 11px; letter-spacing: 0.04em; }
+  .f-serif { font-family: var(--font-display); font-style: italic; font-size: 14px; }
+
+  /* sizes ------------------------------------------------------------- */
+  .sz-sm { font-size: 11px; padding: 3px 7px; }
+  .sz-lg { font-size: 17px; padding: 5px 10px; }
+  .sz-xl { font-size: 24px; padding: 6px 12px; letter-spacing: 0.02em; }
+
+  /* colour variants --------------------------------------------------- */
+  .v-paper  { background: var(--paper);    color: var(--ink); }
+  .v-ink    { background: var(--ink);      color: var(--paper); }
+  .v-cream  { background: var(--c-cream);  color: #3a2e17; }
+  .v-red    { background: var(--c-red);    color: #fff; }
+  .v-yellow { background: var(--c-yellow); color: #1A1A1A; }
+  .v-pink   { background: var(--c-pink);   color: #3D1023; }
+  .v-blue   { background: var(--c-blue);   color: #fff; }
+  .v-green  { background: var(--c-green);  color: #fff; }
+  .v-orange { background: var(--c-orange); color: #fff; }
+  .v-teal   { background: var(--c-teal);   color: #fff; }
+  .v-purple { background: var(--c-purple); color: #fff; }
+
+  /* shapes ------------------------------------------------------------ */
+  .s-circle {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.05;
+  }
+  .s-tape { padding: 3px 18px; }
+  .s-peel { clip-path: polygon(0 0, 100% 0, 100% 72%, 88% 100%, 0 100%); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stk { opacity: 1; animation: none; }
+  }
+</style>

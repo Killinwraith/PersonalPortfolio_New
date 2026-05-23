@@ -1,0 +1,132 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const features = await getCollection('features', ({ data }) => !data.draft);
+  return features.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const published = new Date(entry.data.publishedAt).toLocaleDateString('en-CA', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<BaseLayout title={`${entry.data.title} — Hetang Mehta`} description={entry.data.deck}>
+  <article class="feature-page">
+    <a href="/" class="back">← back to the wall</a>
+
+    <header>
+      <div class="meta">
+        <span class="kicker">{entry.data.kicker}</span>
+        <span class="dot">·</span>
+        <time class="kicker" datetime={entry.data.publishedAt.toISOString()}>{published}</time>
+      </div>
+      <h1 class="headline">{entry.data.title}</h1>
+      <p class="deck">{entry.data.deck}</p>
+    </header>
+
+    {entry.data.image && (
+      <figure class="hero">
+        <img src={entry.data.image} alt="" />
+      </figure>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {entry.data.tags.length > 0 && (
+      <footer class="tags">
+        {entry.data.tags.map((t) => <span class="tag">{t}</span>)}
+      </footer>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .feature-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 4rem) var(--pad-page);
+    color: var(--fg-page);
+  }
+  .back {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+    opacity: 0.75;
+  }
+  .back:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+  .meta { display: flex; gap: 8px; align-items: baseline; margin-bottom: 0.5rem; }
+  .dot { opacity: 0.5; }
+  .hero {
+    margin: 2rem -2rem;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) {
+    .hero { margin: 1.5rem 0; }
+  }
+  .hero img { width: 100%; height: 100%; object-fit: cover; }
+  .prose {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  .prose :global(p) { margin: 0 0 1.25em; }
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 2.5em 0 0.5em;
+  }
+  .prose :global(h3) {
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin: 2em 0 0.5em;
+  }
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--rule);
+    padding-left: 1.25rem;
+    margin: 1.5em 0;
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--c-cream);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+  }
+  .prose :global(a) {
+    border-bottom: 1px solid currentColor;
+  }
+  .tags {
+    margin-top: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+</style>
